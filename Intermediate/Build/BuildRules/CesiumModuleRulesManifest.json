@@ -1,0 +1,8 @@
+{
+	"SourceFiles": [
+		"E:\\Unreal Projects\\Cesium\\Source\\Cesium\\Cesium.Build.cs",
+		"E:\\Unreal Projects\\Cesium\\Source\\Cesium.Target.cs",
+		"E:\\Unreal Projects\\Cesium\\Source\\CesiumEditor.Target.cs"
+	],
+	"EngineVersion": "5.4.4"
+}

@@ -1,0 +1,14 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "e:\\unreal projects\\cesium\\source\\cesium\\cesium.cpp",
+        "ProvidedModule": "",
+        "PCH": "e:\\unreal projects\\cesium\\intermediate\\build\\win64\\x64\\cesium\\shipping\\engine\\sharedpch.engine.project.valapi.cpp20.h.pch",
+        "Includes": [
+            "e:\\unreal projects\\cesium\\intermediate\\build\\win64\\x64\\unrealgame\\shipping\\cesium\\definitions.cesium.h",
+            "e:\\unreal projects\\cesium\\source\\cesium\\cesium.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}

@@ -1,0 +1,12 @@
+/NOLOGO
+/errorReport:prompt
+/MACHINE:x64
+/SUBSYSTEM:WINDOWS
+/DEF
+/NAME:"UnrealEditor-Cesium.dll"
+/IGNORE:4221
+/NODEFAULTLIB
+"E:\Unreal Projects\Cesium\Intermediate\Build\Win64\x64\CesiumEditor\Development\UnrealEd\SharedPCH.UnrealEd.Project.ValApi.Cpp20.h.obj"
+"E:\Unreal Projects\Cesium\Intermediate\Build\Win64\x64\UnrealEditor\Development\Cesium\Cesium.cpp.obj"
+"E:\Unreal Projects\Cesium\Intermediate\Build\Win64\x64\UnrealEditor\Development\Cesium\Default.rc2.res"
+/OUT:"E:\Unreal Projects\Cesium\Intermediate\Build\Win64\x64\UnrealEditor\Development\Cesium\UnrealEditor-Cesium.lib"
