@@ -42,8 +42,8 @@ jobs:
       # Check RunUAT.sh/bat help for all options: RunUAT BuildCookRun -help
       run: |
         echo "Starting Unreal Engine build..."
-        RunUAT BuildCookRun \
-          -project="${{ github.workspace }}/<YOUR_PROJECT_NAME>.uproject" \
+        /Users/Shared/Epic\ Games/UE_5.4/Engine/Build/BatchFiles/RunUAT.sh BuildCookRun \
+          -project="${{ github.workspace }}/<CesiumTest>.uproject" \
           -noCompileEditor \
           -noP4 \
           -clientconfig=Development \
