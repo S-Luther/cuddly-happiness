@@ -43,7 +43,7 @@ jobs:
       run: |
         echo "Starting Unreal Engine build..."
         /Users/Shared/Epic\ Games/UE_5.4/Engine/Build/BatchFiles/RunUAT.sh BuildCookRun \
-          -project="${{ github.workspace }}/<CesiumTest>.uproject" \
+          -project="${{ github.workspace }}/Cesium.uproject" \
           -noCompileEditor \
           -noP4 \
           -clientconfig=Development \
