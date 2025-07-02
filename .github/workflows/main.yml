@@ -1,0 +1,73 @@
+name: Unreal Engine Build
+
+on:
+  push:
+    branches:
+      - main # Trigger on pushes to the main branch
+  workflow_dispatch: # Allows manual triggering from GitHub UI
+
+jobs:
+  build_ue_project:
+    # Use your custom label to target your self-hosted runner
+    runs-on: self-hosted # Or 'self-hosted,macOS,unreal-engine' if you used specific labels
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        lfs: true # Ensure Git LFS files are pulled
+
+    - name: Set up Unreal Engine Environment Variables (macOS/Linux Example)
+      # This step is crucial to ensure RunUAT.sh/bat can be found
+      # Adjust the path to your Unreal Engine installation
+      # For Windows, use 'C:\Program Files\Epic Games\UE_5.3\Engine\Build\BatchFiles'
+      # For macOS, typically '/Users/Shared/Epic Games/UE_5.3/Engine/Build/BatchFiles'
+      run: |
+        echo "Adding Unreal Engine Build Tools to PATH..."
+        # Replace /Users/Shared/Epic Games/UE_5.4 with your actual engine path
+        export UE_ENGINE_ROOT="/Users/Shared/Epic Games/UE_5.4" 
+        export PATH="$UE_ENGINE_ROOT/Engine/Build/BatchFiles:$PATH"
+        echo "PATH is now: $PATH"
+
+    - name: Clean Intermediate and DerivedDataCache (Optional, but Recommended for clean builds)
+      run: |
+        echo "Cleaning Intermediate and DerivedDataCache directories..."
+        rm -rf "${{ github.workspace }}/Intermediate"
+        rm -rf "${{ github.workspace }}/DerivedDataCache"
+        # For Windows, use 'Remove-Item -Recurse -Force ".\Intermediate", ".\DerivedDataCache"'
+
+    - name: Run Unreal Engine Build
+      # Adjust PROJECT_NAME, PLATFORM, CONFIGURATION, and OUTPUT_DIR
+      # For example: PROJECT_NAME=MyGame, PLATFORM=Mac, CONFIGURATION=Development
+      # Check RunUAT.sh/bat help for all options: RunUAT BuildCookRun -help
+      run: |
+        echo "Starting Unreal Engine build..."
+        RunUAT BuildCookRun \
+          -project="${{ github.workspace }}/<YOUR_PROJECT_NAME>.uproject" \
+          -noCompileEditor \
+          -noP4 \
+          -clientconfig=Development \
+          -serverconfig=Development \
+          -nocompile \
+          -nocompileuat \
+          -nopackage \
+          -noloaddlc \
+          -pak \
+          -prereqs \
+          -nodebuginfo \
+          -targetplatform=Mac \
+          -build \
+          -cook \
+          -stage \
+          -archive \
+          -archivedirectory="${{ github.workspace }}/BuildOutput" \
+          -package \
+          -compressed \
+          -distribution
+
+    - name: Upload Build Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: UnrealBuild
+        path: ${{ github.workspace }}/BuildOutput/ # Path to your packaged build
+        retention-days: 7 # How long to keep the artifact
