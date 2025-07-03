@@ -62,7 +62,7 @@ jobs:
 
         # Use 'call' to ensure RunUAT.bat executes correctly and returns control
         # Pass arguments directly, RunUAT is generally good at handling quoted paths
-        call RunUAT BuildCookRun ^
+        call 'C:\Program Files\Epic Games\UE_5.4\Engine\Build\BatchFiles\RunUAT.bat' BuildCookRun ^
           -project="%PROJECT_PATH_UNREAL%" ^
           -noCompileEditor ^
           -noP4 ^
