@@ -49,7 +49,7 @@ jobs:
         # Ensure the .uproject path uses forward slashes or double backslashes
         # when passed as an argument, even on Windows.
         # RunUAT.bat is automatically picked up if its directory is in PATH.
-        RunUAT BuildCookRun ^
+        'C:\Program Files\Epic Games\UE_5.4\Engine\Build\BatchFiles\RunUAT.sh' BuildCookRun ^
           -project="%GITHUB_WORKSPACE%\Cesium.uproject" ^
           -noCompileEditor ^
           -noP4 ^
