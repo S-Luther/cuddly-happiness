@@ -51,7 +51,7 @@ jobs:
         echo "Building project: %PROJECT_PATH_UNREAL%"
         echo "Archiving to: %ARCHIVE_DIR_UNREAL%"
 
-        & 'C:\Program Files\Epic Games\UE_5.4\Engine\Build\BatchFiles\RunUAT.sh' BuildCookRun  -project="C:\Users\sam\Code\actions-runner\_work\cuddly-happiness\cuddly-happiness\Cesium.uproject"
+        'C:\Program Files\Epic Games\UE_5.4\Engine\Build\BatchFiles\RunUAT.sh' BuildCookRun  -project="C:\Users\sam\Code\actions-runner\_work\cuddly-happiness\cuddly-happiness\Cesium.uproject"
           -noCompileEditor ^
           -noP4 ^
           -clientconfig=Development ^
