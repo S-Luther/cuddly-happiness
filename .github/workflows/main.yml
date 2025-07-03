@@ -11,7 +11,7 @@ jobs:
     # Use your custom label to target your self-hosted Windows runner.
     # Common labels might be 'self-hosted,windows' or 'self-hosted,windows-latest'.
     # Ensure your runner is configured with the labels you specify here.
-    runs-on: self-hosted,windows # Example: assuming you labeled your Windows runner with 'windows'
+    runs-on: self-hosted # Example: assuming you labeled your Windows runner with 'windows'
 
     steps:
     - name: Checkout Repository
