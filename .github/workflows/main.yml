@@ -44,8 +44,15 @@ jobs:
       # Check RunUAT.bat help for all options: RunUAT BuildCookRun -help
       run: |
         echo "Starting Unreal Engine build..."
-        'C:\Program Files\Epic Games\UE_5.4\Engine\Build\BatchFiles\RunUAT.sh' BuildCookRun ^
-          -project="%GITHUB_WORKSPACE%\Cesium.uproject" ^
+        
+        set "PROJECT_PATH_UNREAL=%GITHUB_WORKSPACE:\=/%/Cesium.uproject"
+        set "ARCHIVE_DIR_UNREAL=%GITHUB_WORKSPACE:\=/%/BuildOutput"
+
+        echo "Building project: %PROJECT_PATH_UNREAL%"
+        echo "Archiving to: %ARCHIVE_DIR_UNREAL%"
+
+        call 'C:\Program Files\Epic Games\UE_5.4\Engine\Build\BatchFiles\RunUAT.sh' BuildCookRun ^
+          -project="%PROJECT_PATH_UNREAL%" ^
           -noCompileEditor ^
           -noP4 ^
           -clientconfig=Development ^
