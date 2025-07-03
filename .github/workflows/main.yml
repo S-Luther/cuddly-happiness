@@ -9,9 +9,8 @@ on:
 jobs:
   build_ue_project_windows:
     # Use your custom label to target your self-hosted Windows runner.
-    # Common labels might be 'self-hosted,windows' or 'self-hosted,windows-latest'.
-    # Ensure your runner is configured with the labels you specify here.
-    runs-on: self-hosted # Example: assuming you labeled your Windows runner with 'windows'
+    # Example: 'self-hosted,windows' or 'self-hosted,my-windows-runner'
+    runs-on: self-hosted,windows 
 
     steps:
     - name: Checkout Repository
@@ -19,39 +18,72 @@ jobs:
       with:
         lfs: true # Ensure Git LFS files are pulled
 
-    - name: Set up Unreal Engine Environment Variables (Windows Example)
+    - name: Set up Unreal Engine Environment Variables (Windows)
       # This step is crucial to ensure RunUAT.bat can be found.
       # Adjust the path to your Unreal Engine installation on the Windows runner.
-      # Use double backslashes for paths in YAML strings, or single forward slashes.
-      # For example: 'C:\\Program Files\\Epic Games\\UE_5.3\\Engine\\Build\\BatchFiles'
+      # IMPORTANT: Use forward slashes here, or double backslashes if you insist on backslashes.
+      # Example: C:/Program Files/Epic Games/UE_5.3
       run: |
         echo "Adding Unreal Engine Build Tools to PATH..."
-        set "UE_ENGINE_ROOT=C:\Program Files\Epic Games\UE_5.4" 
-        set "myPATH=%UE_ENGINE_ROOT%\Engine\Build\BatchFiles;%myPATH%"
-        echo "myPATH is now: %myPATH%"
+        # Replace C:/Program Files/Epic Games/UE_5.3 with your actual engine path
+        set "UE_ENGINE_ROOT=C:/Program Files/Epic Games/UE_5.4" 
+        set "PATH=%UE_ENGINE_ROOT%/Engine/Build/BatchFiles;%PATH%"
+        echo "PATH is now: %PATH%"
       shell: cmd # Use cmd shell for Windows commands
+
+    - name: Debug - Verify Paths and RunUAT Location
+      run: |
+        echo "Current Working Directory: %CD%"
+        echo "GITHUB_WORKSPACE: %GITHUB_WORKSPACE%"
+        echo "UE_ENGINE_ROOT: %UE_ENGINE_ROOT%"
+        where RunUAT.bat || echo "RunUAT.bat not found in PATH. Check UE_ENGINE_ROOT and PATH setup."
+        dir "%GITHUB_WORKSPACE%\<YOUR_PROJECT_NAME>.uproject" || echo "Project file not found at expected path."
+      shell: cmd
 
     - name: Clean Intermediate and DerivedDataCache (Optional, but Recommended for clean builds)
       run: |
         echo "Cleaning Intermediate and DerivedDataCache directories..."
+        # Use PowerShell for robust file deletion. -ErrorAction SilentlyContinue prevents errors if dir doesn't exist.
         Remove-Item -Recurse -Force ".\Intermediate" -ErrorAction SilentlyContinue
         Remove-Item -Recurse -Force ".\DerivedDataCache" -ErrorAction SilentlyContinue
       shell: powershell # Using PowerShell for robust file deletion
 
     - name: Run Unreal Engine Build
-      # Adjust PROJECT_NAME, PLATFORM, CONFIGURATION, and OUTPUT_DIR
-      # For example: PROJECT_NAME=MyGame, PLATFORM=Win64, CONFIGURATION=Development
-      # Check RunUAT.bat help for all options: RunUAT BuildCookRun -help
       run: |
         echo "Starting Unreal Engine build..."
         
+        # Define project and output paths using forward slashes for RunUAT
+        # GITHUB_WORKSPACE already uses backslashes on Windows, convert them.
         set "PROJECT_PATH_UNREAL=%GITHUB_WORKSPACE:\=/%/Cesium.uproject"
         set "ARCHIVE_DIR_UNREAL=%GITHUB_WORKSPACE:\=/%/BuildOutput"
 
         echo "Building project: %PROJECT_PATH_UNREAL%"
         echo "Archiving to: %ARCHIVE_DIR_UNREAL%"
 
-        'C:\Program Files\Epic Games\UE_5.4\Engine\Build\BatchFiles\RunUAT.sh' BuildCookRun  -project="C:\Users\sam\Code\actions-runner\_work\cuddly-happiness\cuddly-happiness\Cesium.uproject" -noCompileEditor -noP4 -clientconfig=Development -serverconfig=Development -nocompile -nocompileuat -nopackage -noloaddlc -pak -prereqs -nodebuginfo -targetplatform=Win64 -build -cook -stage -archive -archivedirectory="%GITHUB_WORKSPACE%\BuildOutput" -package -compressed -distribution
+        # Use 'call' to ensure RunUAT.bat executes correctly and returns control
+        # Pass arguments directly, RunUAT is generally good at handling quoted paths
+        call RunUAT BuildCookRun ^
+          -project="%PROJECT_PATH_UNREAL%" ^
+          -noCompileEditor ^
+          -noP4 ^
+          -clientconfig=Development ^
+          -serverconfig=Development ^
+          -nocompile ^
+          -nocompileuat ^
+          -nopackage ^
+          -noloaddlc ^
+          -pak ^
+          -prereqs ^
+          -nodebuginfo ^
+          -targetplatform=Win64 ^
+          -build ^
+          -cook ^
+          -stage ^
+          -archive ^
+          -archivedirectory="%ARCHIVE_DIR_UNREAL%" ^
+          -package ^
+          -compressed ^
+          -distribution
       shell: cmd # Use cmd shell for RunUAT execution
 
     - name: Upload Build Artifacts
