@@ -10,7 +10,7 @@ jobs:
   build_ue_project_windows:
     # Use your custom label to target your self-hosted Windows runner.
     # Example: 'self-hosted,windows' or 'self-hosted,my-windows-runner'
-    runs-on: self-hosted,windows 
+    runs-on: self-hosted 
 
     steps:
     - name: Checkout Repository
