@@ -26,7 +26,6 @@ jobs:
       # For example: 'C:\\Program Files\\Epic Games\\UE_5.3\\Engine\\Build\\BatchFiles'
       run: |
         echo "Adding Unreal Engine Build Tools to PATH..."
-        # Replace C:\Program Files\Epic Games\UE_5.3 with your actual engine path
         set "UE_ENGINE_ROOT=C:\Program Files\Epic Games\UE_5.4" 
         set "PATH=%UE_ENGINE_ROOT%\Engine\Build\BatchFiles;%PATH%"
         echo "PATH is now: %PATH%"
@@ -35,7 +34,6 @@ jobs:
     - name: Clean Intermediate and DerivedDataCache (Optional, but Recommended for clean builds)
       run: |
         echo "Cleaning Intermediate and DerivedDataCache directories..."
-        # Use PowerShell or cmd commands for Windows
         Remove-Item -Recurse -Force ".\Intermediate" -ErrorAction SilentlyContinue
         Remove-Item -Recurse -Force ".\DerivedDataCache" -ErrorAction SilentlyContinue
       shell: powershell # Using PowerShell for robust file deletion
@@ -46,9 +44,6 @@ jobs:
       # Check RunUAT.bat help for all options: RunUAT BuildCookRun -help
       run: |
         echo "Starting Unreal Engine build..."
-        # Ensure the .uproject path uses forward slashes or double backslashes
-        # when passed as an argument, even on Windows.
-        # RunUAT.bat is automatically picked up if its directory is in PATH.
         'C:\Program Files\Epic Games\UE_5.4\Engine\Build\BatchFiles\RunUAT.sh' BuildCookRun ^
           -project="%GITHUB_WORKSPACE%\Cesium.uproject" ^
           -noCompileEditor ^
