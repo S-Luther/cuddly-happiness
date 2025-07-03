@@ -27,8 +27,8 @@ jobs:
       run: |
         echo "Adding Unreal Engine Build Tools to PATH..."
         set "UE_ENGINE_ROOT=C:\Program Files\Epic Games\UE_5.4" 
-        set "PATH=%UE_ENGINE_ROOT%\Engine\Build\BatchFiles;%PATH%"
-        echo "PATH is now: %PATH%"
+        set "myPATH=%UE_ENGINE_ROOT%\Engine\Build\BatchFiles;%myPATH%"
+        echo "myPATH is now: %myPATH%"
       shell: cmd # Use cmd shell for Windows commands
 
     - name: Clean Intermediate and DerivedDataCache (Optional, but Recommended for clean builds)
