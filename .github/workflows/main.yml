@@ -1,4 +1,4 @@
-name: Unreal Engine Build
+name: Unreal Engine Windows Build
 
 on:
   push:
@@ -7,9 +7,11 @@ on:
   workflow_dispatch: # Allows manual triggering from GitHub UI
 
 jobs:
-  build_ue_project:
-    # Use your custom label to target your self-hosted runner
-    runs-on: self-hosted # Or 'self-hosted,macOS,unreal-engine' if you used specific labels
+  build_ue_project_windows:
+    # Use your custom label to target your self-hosted Windows runner.
+    # Common labels might be 'self-hosted,windows' or 'self-hosted,windows-latest'.
+    # Ensure your runner is configured with the labels you specify here.
+    runs-on: self-hosted,windows # Example: assuming you labeled your Windows runner with 'windows'
 
     steps:
     - name: Checkout Repository
@@ -17,57 +19,64 @@ jobs:
       with:
         lfs: true # Ensure Git LFS files are pulled
 
-    - name: Set up Unreal Engine Environment Variables (macOS/Linux Example)
-      # This step is crucial to ensure RunUAT.sh/bat can be found
-      # Adjust the path to your Unreal Engine installation
-      # For Windows, use 'C:\Program Files\Epic Games\UE_5.3\Engine\Build\BatchFiles'
-      # For macOS, typically '/Users/Shared/Epic Games/UE_5.3/Engine/Build/BatchFiles'
+    - name: Set up Unreal Engine Environment Variables (Windows Example)
+      # This step is crucial to ensure RunUAT.bat can be found.
+      # Adjust the path to your Unreal Engine installation on the Windows runner.
+      # Use double backslashes for paths in YAML strings, or single forward slashes.
+      # For example: 'C:\\Program Files\\Epic Games\\UE_5.3\\Engine\\Build\\BatchFiles'
       run: |
         echo "Adding Unreal Engine Build Tools to PATH..."
-        # Replace /Users/Shared/Epic Games/UE_5.4 with your actual engine path
-        export UE_ENGINE_ROOT="/Users/Shared/Epic Games/UE_5.4" 
-        export PATH="$UE_ENGINE_ROOT/Engine/Build/BatchFiles:$PATH"
-        echo "PATH is now: $PATH"
+        # Replace C:\Program Files\Epic Games\UE_5.3 with your actual engine path
+        set "UE_ENGINE_ROOT=C:\Program Files\Epic Games\UE_5.4" 
+        set "PATH=%UE_ENGINE_ROOT%\Engine\Build\BatchFiles;%PATH%"
+        echo "PATH is now: %PATH%"
+      shell: cmd # Use cmd shell for Windows commands
 
     - name: Clean Intermediate and DerivedDataCache (Optional, but Recommended for clean builds)
       run: |
         echo "Cleaning Intermediate and DerivedDataCache directories..."
-        rm -rf "${{ github.workspace }}/Intermediate"
-        rm -rf "${{ github.workspace }}/DerivedDataCache"
-        # For Windows, use 'Remove-Item -Recurse -Force ".\Intermediate", ".\DerivedDataCache"'
+        # Use PowerShell or cmd commands for Windows
+        Remove-Item -Recurse -Force ".\Intermediate" -ErrorAction SilentlyContinue
+        Remove-Item -Recurse -Force ".\DerivedDataCache" -ErrorAction SilentlyContinue
+      shell: powershell # Using PowerShell for robust file deletion
 
     - name: Run Unreal Engine Build
       # Adjust PROJECT_NAME, PLATFORM, CONFIGURATION, and OUTPUT_DIR
-      # For example: PROJECT_NAME=MyGame, PLATFORM=Mac, CONFIGURATION=Development
-      # Check RunUAT.sh/bat help for all options: RunUAT BuildCookRun -help
+      # For example: PROJECT_NAME=MyGame, PLATFORM=Win64, CONFIGURATION=Development
+      # Check RunUAT.bat help for all options: RunUAT BuildCookRun -help
       run: |
         echo "Starting Unreal Engine build..."
-        /Users/Shared/Epic\ Games/UE_5.4/Engine/Build/BatchFiles/RunUAT.sh BuildCookRun \
-          -project="${{ github.workspace }}/Cesium.uproject" \
-          -noCompileEditor \
-          -noP4 \
-          -clientconfig=Development \
-          -serverconfig=Development \
-          -nocompile \
-          -nocompileuat \
-          -nopackage \
-          -noloaddlc \
-          -pak \
-          -prereqs \
-          -nodebuginfo \
-          -targetplatform=Mac \
-          -build \
-          -cook \
-          -stage \
-          -archive \
-          -archivedirectory="${{ github.workspace }}/BuildOutput" \
-          -package \
-          -compressed \
+        # Ensure the .uproject path uses forward slashes or double backslashes
+        # when passed as an argument, even on Windows.
+        # RunUAT.bat is automatically picked up if its directory is in PATH.
+        RunUAT BuildCookRun ^
+          -project="%GITHUB_WORKSPACE%\Cesium.uproject" ^
+          -noCompileEditor ^
+          -noP4 ^
+          -clientconfig=Development ^
+          -serverconfig=Development ^
+          -nocompile ^
+          -nocompileuat ^
+          -nopackage ^
+          -noloaddlc ^
+          -pak ^
+          -prereqs ^
+          -nodebuginfo ^
+          -targetplatform=Win64 ^
+          -build ^
+          -cook ^
+          -stage ^
+          -archive ^
+          -archivedirectory="%GITHUB_WORKSPACE%\BuildOutput" ^
+          -package ^
+          -compressed ^
           -distribution
+      shell: cmd # Use cmd shell for RunUAT execution
 
     - name: Upload Build Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: UnrealBuild
-        path: ${{ github.workspace }}/BuildOutput/ # Path to your packaged build
+        name: UnrealBuild-Windows
+        # Path to your packaged build, ensure it's Windows-friendly
+        path: ${{ github.workspace }}\BuildOutput\ 
         retention-days: 7 # How long to keep the artifact
